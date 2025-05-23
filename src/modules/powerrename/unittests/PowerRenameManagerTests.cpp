@@ -366,5 +366,21 @@ namespace PowerRenameManagerTests
 
             RenameHelper(renamePairs, ARRAYSIZE(renamePairs), L"foo", L"bar$MMM-$MMMM-$DDD-$DDDD", SYSTEMTIME{ 2020, 1, 3, 1, 15, 6, 42, 453 }, DEFAULT_FLAGS);
         }
+
+        TEST_METHOD (VerifyReservedNameRename)
+        {
+            // Verify renaming is prevented for Windows reserved names
+            rename_pairs renamePairs[] = {
+                { L"file.txt", L"file_norename.txt", true, false, 0 }, // Should not rename to CON
+                { L"folder", L"folder_norename", false, false, 0 },   // Should not rename to PRN
+                { L"file2.txt", L"file2_norename.txt", true, false, 0 }, // Should not rename to COM1
+                { L"folder2", L"folder2_norename", false, false, 0 }   // Should not rename to LPT1
+            };
+
+            RenameHelper(renamePairs, 1, L"file", L"CON", SYSTEMTIME{ 2020, 7, 3, 22, 15, 6, 42, 453 }, DEFAULT_FLAGS);
+            RenameHelper(renamePairs + 1, 1, L"folder", L"PRN", SYSTEMTIME{ 2020, 7, 3, 22, 15, 6, 42, 453 }, DEFAULT_FLAGS);
+            RenameHelper(renamePairs + 2, 1, L"file2", L"COM1", SYSTEMTIME{ 2020, 7, 3, 22, 15, 6, 42, 453 }, DEFAULT_FLAGS);
+            RenameHelper(renamePairs + 3, 1, L"folder2", L"LPT1", SYSTEMTIME{ 2020, 7, 3, 22, 15, 6, 42, 453 }, DEFAULT_FLAGS);
+        }
     };
 }

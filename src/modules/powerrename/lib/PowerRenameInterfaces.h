@@ -35,6 +35,7 @@ enum class PowerRenameItemRenameStatus {
     ItemNameTooLong,
     ItemNameInvalidChar,
     ItemNameAlreadyExists,
+    ItemNameReserved,
 };
 
 interface __declspec(uuid("3ECBA62B-E0F0-4472-AA2E-DEE7A1AA46B9")) IPowerRenameRegExEvents : public IUnknown

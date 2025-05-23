@@ -708,3 +708,34 @@ std::wstring CreateGuidStringWithoutBrackets()
 
     return L"";
 }
+
+bool IsFileNameReserved(_In_ const std::wstring& fileName)
+{
+    // Check for Win32 reserved names
+    // https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
+    
+    // Extract filename without extension for checking
+    std::wstring baseFileName = fs::path(fileName).stem().wstring();
+    
+    // Convert to uppercase for case-insensitive comparison
+    std::wstring upperFileName;
+    upperFileName.resize(baseFileName.size());
+    std::transform(baseFileName.begin(), baseFileName.end(), upperFileName.begin(), ::towupper);
+    
+    // Check device reserved names
+    static const std::wstring reservedNames[] = {
+        L"CON", L"PRN", L"AUX", L"NUL",
+        L"COM1", L"COM2", L"COM3", L"COM4", L"COM5", L"COM6", L"COM7", L"COM8", L"COM9",
+        L"LPT1", L"LPT2", L"LPT3", L"LPT4", L"LPT5", L"LPT6", L"LPT7", L"LPT8", L"LPT9"
+    };
+    
+    for (const auto& name : reservedNames)
+    {
+        if (upperFileName == name)
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}

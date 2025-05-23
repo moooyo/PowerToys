@@ -27,3 +27,4 @@ bool GetRegBoolean(const std::wstring& valueName, bool defaultValue);
 void SetRegBoolean(const std::wstring& valueName, bool value);
 bool LastModifiedTime(const std::wstring& filePath, FILETIME* lpFileTime);
 std::wstring CreateGuidStringWithoutBrackets();
+bool IsFileNameReserved(_In_ const std::wstring& fileName);
