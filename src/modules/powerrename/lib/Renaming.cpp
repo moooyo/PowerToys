@@ -197,6 +197,13 @@ bool DoRename(CComPtr<IPowerRenameRegEx>& spRenameRegEx, unsigned long& itemEnum
             spItem->PutStatus(PowerRenameItemRenameStatus::ItemNameTooLong);
             wouldRename = false;
         }
+        // Check for Windows reserved names (CON, PRN, AUX, NUL, COM1-9, LPT1-9)
+        // Ref https://learn.microsoft.com/en-us/windows/win32/fileio/naming-a-file#naming-conventions
+        else if (IsFileNameReserved(newNameToUseWstr))
+        {
+            spItem->PutStatus(PowerRenameItemRenameStatus::ItemNameReserved);
+            wouldRename = false;
+        }
     }
 
     winrt::check_hresult(spItem->PutNewName(newNameToUse));
