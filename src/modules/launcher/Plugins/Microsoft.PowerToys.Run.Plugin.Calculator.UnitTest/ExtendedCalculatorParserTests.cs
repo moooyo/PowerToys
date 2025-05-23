@@ -14,26 +14,32 @@ namespace Microsoft.PowerToys.Run.Plugin.Calculator.UnitTests
     public class ExtendedCalculatorParserTests
     {
         [DataTestMethod]
-        [DataRow(null)]
-        [DataRow("")]
-        [DataRow("  ")]
-        public void InputValid_ThrowError_WhenCalledNullOrEmpty(string input)
+        [DataRow(null, false)]
+        [DataRow("", false)]
+        [DataRow("  ", false)]
+        public void InputValid_HandlesNullOrWhitespace_WhenCalled(string input, bool expected)
         {
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => CalculateHelper.InputValid(input));
+            var result = CalculateHelper.InputValid(input);
+
+            // Assert
+            Assert.AreEqual(expected, result);
         }
 
         [DataTestMethod]
         [DataRow(null)]
         [DataRow("")]
         [DataRow("  ")]
-        public void Interpret_ThrowError_WhenCalledNullOrEmpty(string input)
+        public void Interpret_NoResult_WhenCalledWithNullOrEmpty(string input)
         {
             // Arrange
             var engine = new CalculateEngine();
 
             // Act
-            Assert.ThrowsException<ArgumentNullException>(() => engine.Interpret(input, CultureInfo.CurrentCulture, out _));
+            var result = engine.Interpret(input, CultureInfo.CurrentCulture, out _);
+
+            // Assert
+            Assert.AreEqual(default, result);
         }
 
         [DataTestMethod]

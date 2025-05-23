@@ -38,7 +38,7 @@ namespace Microsoft.PowerToys.Run.Plugin.Calculator
         {
             if (string.IsNullOrWhiteSpace(input))
             {
-                throw new ArgumentNullException(paramName: nameof(input));
+                return false;
             }
 
             if (!RegValidExpressChar.IsMatch(input))
