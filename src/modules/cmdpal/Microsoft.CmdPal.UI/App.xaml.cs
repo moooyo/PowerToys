@@ -8,7 +8,14 @@ using Microsoft.CmdPal.Common.Services;
 using Microsoft.CmdPal.Ext.Apps;
 
 using Microsoft.CmdPal.Ext.Indexer;
+using Microsoft.CmdPal.Ext.Registry;
 using Microsoft.CmdPal.Ext.Shell;
+using Microsoft.CmdPal.Ext.System;
+using Microsoft.CmdPal.Ext.TimeDate;
+using Microsoft.CmdPal.Ext.WebSearch;
+using Microsoft.CmdPal.Ext.WindowsServices;
+using Microsoft.CmdPal.Ext.WindowsSettings;
+using Microsoft.CmdPal.Ext.WindowsTerminal;
 using Microsoft.CmdPal.UI.ViewModels;
 using Microsoft.CmdPal.UI.ViewModels.BuiltinCommands;
 using Microsoft.CmdPal.UI.ViewModels.Models;
@@ -102,6 +109,13 @@ public partial class App : Application
 
         services.AddSingleton<ICommandProvider, ShellCommandsProvider>();
         services.AddSingleton<ICommandProvider, IndexerCommandsProvider>();
+        services.AddSingleton<ICommandProvider, TimeDateCommandsProvider>();
+        services.AddSingleton<ICommandProvider, SystemCommandExtensionProvider>();
+        services.AddSingleton<ICommandProvider, RegistryCommandsProvider>();
+        services.AddSingleton<ICommandProvider, WebSearchCommandsProvider>();
+        services.AddSingleton<ICommandProvider, WindowsTerminalCommandsProvider>();
+        services.AddSingleton<ICommandProvider, WindowsSettingsCommandsProvider>();
+        services.AddSingleton<ICommandProvider, WindowsServicesCommandsProvider>();
 
         // TODO GH #527 re-enable the clipboard commands
         // services.AddSingleton<ICommandProvider, ClipboardHistoryCommandsProvider>();
