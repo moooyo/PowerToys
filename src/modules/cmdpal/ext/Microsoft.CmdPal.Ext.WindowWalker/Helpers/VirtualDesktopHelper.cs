@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 
 using Microsoft.CmdPal.Ext.WindowWalker.Properties;
@@ -61,9 +62,20 @@ public class VirtualDesktopHelper
     /// <param name="desktopListUpdate">Setting to configure if the list of available desktops should update automatically or only when calling <see cref="UpdateDesktopList"/>. Per default this is set to manual update (false) to have less registry queries.</param>
     public VirtualDesktopHelper(bool desktopListUpdate = false)
     {
+        var iVirtualDesktopManagerCLSID = new Guid("aa509086-5ca9-4c25-8f95-589d3c07b48a");
+        var iVirtualDesktopManagerIID = new Guid("a5cd92ff-29be-454c-8d04-d82879fb3f1b");
+        var cw = new StrategyBasedComWrappers();
+        const uint CLSCTX_INPROC_CALL = 0x17;
+
         try
         {
-            _virtualDesktopManager = (IVirtualDesktopManager)new CVirtualDesktopManager();
+            var hr = NativeMethods.CoCreateInstance(iVirtualDesktopManagerCLSID, IntPtr.Zero, CLSCTX_INPROC_CALL, iVirtualDesktopManagerIID, out var virtualDesktopManagerPtr);
+            if (hr != 0)
+            {
+                throw new ArgumentException($"Failed to create IVirtualDesktopManager instance. HR: 0x{hr:X}");
+            }
+
+            _virtualDesktopManager = (IVirtualDesktopManager)cw.GetOrCreateObjectForComInstance(virtualDesktopManagerPtr, CreateObjectFlags.None);
         }
         catch (COMException ex)
         {
