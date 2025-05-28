@@ -4,9 +4,8 @@
 
 using System;
 using System.Runtime.InteropServices;
-using Windows.Win32;
-using Windows.Win32.System.Com;
-using WinRT;
+using System.Runtime.InteropServices.Marshalling;
+using Microsoft.CmdPal.Ext.WinGet.Helpers;
 
 namespace WindowsPackageManager.Interop;
 
@@ -22,10 +21,19 @@ public class WindowsPackageManagerStandardFactory : WindowsPackageManagerFactory
         var pUnknown = IntPtr.Zero;
         try
         {
-            var hr = PInvoke.CoCreateInstance(clsid, null, CLSCTX.CLSCTX_ALL, iid, out var result);
-            Marshal.ThrowExceptionForHR(hr);
-            pUnknown = Marshal.GetIUnknownForObject(result);
-            return MarshalGeneric<T>.FromAbi(pUnknown);
+            var cw = new StrategyBasedComWrappers();
+            const int clsctxAll = 0x17;
+
+            var hr = Native.CoCreateInstance(clsid, IntPtr.Zero, clsctxAll, iid, out pUnknown);
+            Marshal.ThrowExceptionForHR((int)hr);
+            var instance = (T)cw.GetOrCreateObjectForComInstance(pUnknown, CreateObjectFlags.None);
+
+            if (instance == null)
+            {
+                throw new ArgumentException("Failed to get IApplicationActivationManager interface");
+            }
+
+            return instance;
         }
         finally
         {

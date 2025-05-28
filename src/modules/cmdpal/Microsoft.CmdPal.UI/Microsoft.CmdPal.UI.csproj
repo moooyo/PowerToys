@@ -24,13 +24,13 @@
   </PropertyGroup>
 
   <PropertyGroup>
-	<SelfContained>true</SelfContained>
+	<!--<SelfContained>true</SelfContained>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishSingleFile>false</PublishSingleFile>
     <DisableRuntimeMarshalling>false</DisableRuntimeMarshalling>
     <PublishAot>true</PublishAot>
-    <EnableMsixTooling>true</EnableMsixTooling>
+    <EnableMsixTooling>true</EnableMsixTooling>-->
   </PropertyGroup>
   
   <PropertyGroup>
@@ -121,6 +121,8 @@
 	<ProjectReference Include="..\ext\Microsoft.CmdPal.Ext.WindowsSettings\Microsoft.CmdPal.Ext.WindowsSettings.csproj" />
 	<ProjectReference Include="..\ext\Microsoft.CmdPal.Ext.WindowsTerminal\Microsoft.CmdPal.Ext.WindowsTerminal.csproj" />
 	<ProjectReference Include="..\ext\Microsoft.CmdPal.Ext.WindowWalker\Microsoft.CmdPal.Ext.WindowWalker.csproj" />
+	<ProjectReference Include="..\ext\Microsoft.CmdPal.Ext.WinGet\Microsoft.CmdPal.Ext.WinGet.csproj" />
+
 
 
 

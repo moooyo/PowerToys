@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System;
+using System.Runtime.InteropServices.Marshalling;
 using Microsoft.Management.Deployment;
 
 namespace WindowsPackageManager.Interop;
@@ -54,6 +55,7 @@ public abstract class WindowsPackageManagerFactory
     {
         var clsid = ClassesDefinition.GetClsid<T>(_clsidContext);
         var iid = ClassesDefinition.GetIid<T>();
+
         return CreateInstance<T>(clsid, iid);
     }
 }
