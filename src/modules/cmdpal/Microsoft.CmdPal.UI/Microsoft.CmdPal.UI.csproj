@@ -24,13 +24,13 @@
   </PropertyGroup>
 
   <PropertyGroup>
-	<!--<SelfContained>true</SelfContained>
+	<SelfContained>true</SelfContained>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishSingleFile>false</PublishSingleFile>
     <DisableRuntimeMarshalling>false</DisableRuntimeMarshalling>
     <PublishAot>true</PublishAot>
-    <EnableMsixTooling>true</EnableMsixTooling>-->
+    <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
   
   <PropertyGroup>
