@@ -23,15 +23,14 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"><!--<SelfContained>true</SelfContained>
+  <PropertyGroup>
+	<SelfContained>true</SelfContained>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
     <PublishTrimmed>true</PublishTrimmed>
     <PublishSingleFile>false</PublishSingleFile>
     <DisableRuntimeMarshalling>false</DisableRuntimeMarshalling>
-    <PublishAot>false</PublishAot>
-    <EnableMsixTooling>true</EnableMsixTooling>-->
-  
-    <IsPublishable>True</IsPublishable>
+    <PublishAot>true</PublishAot>
+    <EnableMsixTooling>true</EnableMsixTooling>
   </PropertyGroup>
   
   <PropertyGroup>
