@@ -4,8 +4,10 @@
 
 using System;
 using System.Runtime.InteropServices;
-using System.Runtime.InteropServices.Marshalling;
-using Microsoft.CmdPal.Ext.WinGet.Helpers;
+using Windows.Services.Maps;
+using Windows.Win32;
+using Windows.Win32.System.Com;
+using WinRT;
 
 namespace WindowsPackageManager.Interop;
 
@@ -16,32 +18,28 @@ public class WindowsPackageManagerStandardFactory : WindowsPackageManagerFactory
     {
     }
 
-    protected override T CreateInstance<T>(Guid clsid, Guid iid)
+    protected override unsafe T CreateInstance<T>(Guid clsid, Guid iid)
     {
         var pUnknown = IntPtr.Zero;
-        try
+        unsafe
         {
-            var cw = new StrategyBasedComWrappers();
-            const int clsctxAll = 0x17;
-
-            var hr = Native.CoCreateInstance(clsid, IntPtr.Zero, clsctxAll, iid, out pUnknown);
-            Marshal.ThrowExceptionForHR((int)hr);
-            var instance = (T)cw.GetOrCreateObjectForComInstance(pUnknown, CreateObjectFlags.None);
-
-            if (instance == null)
+            try
             {
-                throw new ArgumentException("Failed to get IApplicationActivationManager interface");
+                var hr = PInvoke.CoCreateInstance(clsid, null, CLSCTX.CLSCTX_ALL, iid, out var result);
+                Marshal.ThrowExceptionForHR(hr);
+
+                pUnknown = new IntPtr(result);
+
+                return MarshalGeneric<T>.FromAbi(pUnknown);
             }
-
-            return instance;
-        }
-        finally
-        {
-            // CoCreateInstance and FromAbi both AddRef on the native object.
-            // Release once to prevent memory leak.
-            if (pUnknown != IntPtr.Zero)
+            finally
             {
-                Marshal.Release(pUnknown);
+                // CoCreateInstance and FromAbi both AddRef on the native object.
+                // Release once to prevent memory leak.
+                if (pUnknown != IntPtr.Zero)
+                {
+                    Marshal.Release(pUnknown);
+                }
             }
         }
     }
