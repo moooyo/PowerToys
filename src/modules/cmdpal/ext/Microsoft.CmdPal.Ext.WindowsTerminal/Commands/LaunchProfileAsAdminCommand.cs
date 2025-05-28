@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Resources;
+using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.CmdPal.Ext.WindowsTerminal.Helpers;
@@ -66,7 +68,22 @@ internal sealed partial class LaunchProfileAsAdminCommand : InvokableCommand
 
     private void Launch(string id, string profile)
     {
-        var appManager = new ApplicationActivationManager();
+        ComWrappers cw = new StrategyBasedComWrappers();
+
+        var hr = NativeHelpers.CoCreateInstance(NativeHelpers.ApplicationActivationManagerCLSID, IntPtr.Zero, NativeHelpers.CLSCTXINPROCALL, NativeHelpers.ApplicationActivationManagerIID, out var appManagerPtr);
+        if (hr != 0)
+        {
+            throw new ArgumentException($"Failed to create ApplicationActivationManagerCLSID instance. HR: 0x{hr:X}");
+        }
+
+        var appManager = (IApplicationActivationManager)cw.GetOrCreateObjectForComInstance(
+            appManagerPtr, CreateObjectFlags.None);
+
+        if (appManager == null)
+        {
+            throw new ArgumentException("Failed to get IApplicationActivationManager interface");
+        }
+
         const ActivateOptions noFlags = ActivateOptions.None;
         var queryArguments = TerminalHelper.GetArguments(profile, _openNewTab, _openQuake);
         try
