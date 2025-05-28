@@ -28,7 +28,7 @@ public class Win32Program : IProgram
 {
     public static readonly Win32Program InvalidProgram = new Win32Program { Valid = false, Enabled = false };
 
-    private static readonly IFileSystem FileSystem = new FileSystem();
+    private static readonly FileSystem FileSystem = new FileSystem();
     private static readonly IPath Path = FileSystem.Path;
     private static readonly IFile File = FileSystem.File;
     private static readonly IDirectory Directory = FileSystem.Directory;

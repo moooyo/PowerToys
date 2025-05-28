@@ -22,7 +22,7 @@ namespace Microsoft.CmdPal.Ext.Apps.Programs;
 [Serializable]
 public class UWPApplication : IProgram
 {
-    private static readonly IFileSystem FileSystem = new FileSystem();
+    private static readonly FileSystem FileSystem = new FileSystem();
     private static readonly IPath Path = FileSystem.Path;
     private static readonly IFile File = FileSystem.File;
 
