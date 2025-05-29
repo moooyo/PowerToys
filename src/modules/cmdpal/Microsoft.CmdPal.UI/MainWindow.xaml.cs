@@ -324,6 +324,11 @@ public sealed partial class MainWindow : WindowEx,
             BOOL value = true;
             PInvoke.DwmSetWindowAttribute(_hwnd, DWMWINDOWATTRIBUTE.DWMWA_CLOAK, &value, (uint)sizeof(BOOL));
         }
+        
+        // Restore focus to the previous window by briefly showing and hiding the window
+        // This causes Windows to activate the previously active window
+        PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_SHOWNA);
+        PInvoke.ShowWindow(_hwnd, SHOW_WINDOW_CMD.SW_HIDE);
     }
 
     internal void MainWindow_Closed(object sender, WindowEventArgs args)
