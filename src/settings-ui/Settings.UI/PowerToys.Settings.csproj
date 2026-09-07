@@ -129,6 +129,26 @@
 		<ProjectReference Include="..\..\modules\powerdisplay\PowerDisplay.Models\PowerDisplay.Models.csproj" />
 		<ProjectReference Include="..\Settings.UI.Library\Settings.UI.Library.csproj" />
 		<ProjectReference Include="..\Settings.UI.Controls\Settings.UI.Controls.csproj" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<!-- Generate the index by default outside Debug. Use /p:GenerateSettingsSearchIndex=true to opt in for Debug builds. -->
+		<GenerateSettingsSearchIndex Condition="'$(GenerateSettingsSearchIndex)' == '' and '$(Configuration)' != 'Debug'">true</GenerateSettingsSearchIndex>
+		<GenerateSettingsSearchIndex Condition="'$(GenerateSettingsSearchIndex)' == ''">false</GenerateSettingsSearchIndex>
+		<GeneratedJsonFile>$(MSBuildProjectDirectory)\obj\$(Platform)\$(Configuration)\SettingsSearchIndex\search.index.json</GeneratedJsonFile>
+		<SettingsSearchIndexInputsFile>$(MSBuildProjectDirectory)\obj\$(Platform)\$(Configuration)\SettingsSearchIndex\inputs.txt</SettingsSearchIndexInputsFile>
+		<XamlIndexBuilderDotNetExe Condition="'$(XamlIndexBuilderDotNetExe)' == '' and '$(DotNetHostPath)' != ''">$(DotNetHostPath)</XamlIndexBuilderDotNetExe>
+		<XamlIndexBuilderDotNetExe Condition="'$(XamlIndexBuilderDotNetExe)' == ''">dotnet</XamlIndexBuilderDotNetExe>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Exclude indices left by older builds from WinUI's default Assets glob. -->
+		<Content Remove="Assets\Settings\search.index.json" />
+		<!-- These files are outside the framework/RID-specific IntermediateOutputPath used by CoreClean. -->
+		<Clean Include="$(GeneratedJsonFile);$(SettingsSearchIndexInputsFile)" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(GenerateSettingsSearchIndex)' == 'true'">
 		<!-- Build the tool through the project graph, but do not reference it from Settings. -->
 		<ProjectReference Include="..\Settings.UI.XamlIndexBuilder\Settings.UI.XamlIndexBuilder.csproj">
 			<ReferenceOutputAssembly>false</ReferenceOutputAssembly>
@@ -138,14 +158,7 @@
 		</ProjectReference>
 	</ItemGroup>
 
-	<PropertyGroup>
-		<GeneratedJsonFile>$(MSBuildProjectDirectory)\obj\$(Platform)\$(Configuration)\SettingsSearchIndex\search.index.json</GeneratedJsonFile>
-		<SettingsSearchIndexInputsFile>$(MSBuildProjectDirectory)\obj\$(Platform)\$(Configuration)\SettingsSearchIndex\inputs.txt</SettingsSearchIndexInputsFile>
-		<XamlIndexBuilderDotNetExe Condition="'$(XamlIndexBuilderDotNetExe)' == '' and '$(DotNetHostPath)' != ''">$(DotNetHostPath)</XamlIndexBuilderDotNetExe>
-		<XamlIndexBuilderDotNetExe Condition="'$(XamlIndexBuilderDotNetExe)' == ''">dotnet</XamlIndexBuilderDotNetExe>
-	</PropertyGroup>
-
-	<ItemGroup>
+	<ItemGroup Condition="'$(GenerateSettingsSearchIndex)' == 'true'">
 		<!-- Keep Visual Studio's fast up-to-date check aware of this generated output and all of its inputs. -->
 		<_SettingsSearchIndexInput Include="SettingsXAML\**\*.xaml" />
 		<_XamlIndexBuilderInput Include="..\Settings.UI.XamlIndexBuilder\*.cs;..\Settings.UI.XamlIndexBuilder\Settings.UI.XamlIndexBuilder.csproj" />
@@ -160,7 +173,7 @@
 		</Content>
 	</ItemGroup>
 
-	<ItemGroup Condition="'$(DesignTimeBuild)' != 'true'">
+	<ItemGroup Condition="'$(DesignTimeBuild)' != 'true' and '$(GenerateSettingsSearchIndex)' == 'true'">
 		<EmbeddedResource Include="$(GeneratedJsonFile)">
 			<LogicalName>Microsoft.PowerToys.Settings.UI.Assets.search.index.json</LogicalName>
 		</EmbeddedResource>
@@ -227,7 +240,7 @@
 		</Page>
 	</ItemGroup>
 
-	<Target Name="WriteSettingsSearchIndexInputs" Condition="'$(DesignTimeBuild)' != 'true' and '$(BuildingProject)' == 'true'">
+	<Target Name="WriteSettingsSearchIndexInputs" Condition="'$(DesignTimeBuild)' != 'true' and '$(BuildingProject)' == 'true' and '$(GenerateSettingsSearchIndex)' == 'true'">
 		<MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(SettingsSearchIndexInputsFile)'))" />
 		<WriteLinesToFile
 			File="$(SettingsSearchIndexInputsFile)"
@@ -244,7 +257,7 @@
 		DependsOnTargets="ResolveProjectReferences;WriteSettingsSearchIndexInputs"
 		Inputs="@(_SettingsSearchIndexInput-&gt;'%(FullPath)');@(_XamlIndexBuilderInput-&gt;'%(FullPath)');@(_XamlIndexBuilderOutput-&gt;'%(FullPath)');$(SettingsSearchIndexInputsFile)"
 		Outputs="$(GeneratedJsonFile)"
-		Condition="'$(DesignTimeBuild)' != 'true' and '$(BuildingProject)' == 'true'">
+		Condition="'$(DesignTimeBuild)' != 'true' and '$(BuildingProject)' == 'true' and '$(GenerateSettingsSearchIndex)' == 'true'">
 		<Error Condition="'@(_XamlIndexBuilderOutput)' == ''" Text="Unable to resolve the XamlIndexBuilder output." />
 		<MakeDir Directories="$([System.IO.Path]::GetDirectoryName('$(GeneratedJsonFile)'))" />
 		<Message Importance="high" Text="[Settings] Generating search index. Root='$(MSBuildProjectDirectory)\SettingsXAML'; Out='$(GeneratedJsonFile)'; Tool='@(_XamlIndexBuilderOutput)'" />
@@ -255,7 +268,7 @@
 		Name="PrepareSettingsSearchIndex"
 		BeforeTargets="AssignTargetPaths"
 		DependsOnTargets="GenerateSettingsSearchIndex"
-		Condition="'$(DesignTimeBuild)' != 'true' and '$(BuildingProject)' == 'true'">
+		Condition="'$(DesignTimeBuild)' != 'true' and '$(BuildingProject)' == 'true' and '$(GenerateSettingsSearchIndex)' == 'true'">
 		<Error Condition="!Exists('$(GeneratedJsonFile)')" Text="Settings search index generation did not produce '$(GeneratedJsonFile)'." />
 		<ItemGroup>
 			<FileWrites Include="$(GeneratedJsonFile)" />
